@@ -1,0 +1,31 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+apiServer:
+  extraArgs:
+    cloud-provider: aws
+  certSANs:
+{% for san in certSANs %}
+    - "{{ san }}"
+{% endfor %}
+clusterName: {{ clusterName }}
+controlPlaneEndpoint: {{ internalLB }}
+controllerManager:
+  extraArgs:
+    cloud-provider: aws
+    configure-cloud-routes: "false"
+    address: 0.0.0.0
+kubernetesVersion: {{ kubernetesVersion }}
+networking:
+  dnsDomain: cluster.local
+  podSubnet: {{ podCidr }}
+  serviceSubnet: {{ serviceCidr }}
+scheduler:
+  extraArgs:
+    address: 0.0.0.0
+---
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: InitConfiguration
+nodeRegistration:
+  kubeletExtraArgs:
+    cloud-provider: aws

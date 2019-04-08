@@ -1,0 +1,57 @@
+---
+- name: Dist upgrade
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install software dependency
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  loop:
+    - nfs-common
+    - apt-transport-https
+    - curl
+    - ca-certificates
+    - apt-transport-https
+
+- name: Add docker repository apt key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+
+- name: Add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+
+- name: Install docker ce
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Enable docker service
+  systemd:
+    state: started
+    name: docker
+    enabled: yes
+
+- name: Add kubernetes repository apt key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add kubernetes repository
+  apt_repository:
+    repo: "deb https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install kubernetes dependency
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl

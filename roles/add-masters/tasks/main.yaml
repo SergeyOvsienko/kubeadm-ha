@@ -1,0 +1,17 @@
+---
+- name: Create /etc/hosts
+  template:
+    src: master-hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+
+- name: Add controlplane node
+  shell: |
+    kubeadm join {{ hostvars['init']['internalLB'] }}:6443 --token {{ hostvars['init']['token'] }} --discovery-token-ca-cert-hash {{ hostvars['init']['hash'] }} --experimental-control-plane --certificate-key {{ hostvars['init']['key'] }} --node-name $(curl -s http://169.254.169.254/latest/meta-data/hostname)
+    if [ "$?" = "0" ]; then 
+        touch kubeadm.lock
+    fi
+  args:
+    chdir: /opt
+    creates: kubeadm.lock

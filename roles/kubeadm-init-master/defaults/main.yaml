@@ -1,0 +1,12 @@
+kubernetesVersion: "v1.14.0"
+podCidr: "10.10.0.0/16"
+serviceCidr: "10.100.0.0/16"
+clusterName: "test"
+cloudProvider: "aws"
+internalLB: "k8s-masters.devops"
+externalLB: "k8s-masters.example.com"
+certSANs:
+  - "localhost"
+  - "{{ internalLB }}"
+  - "{{ externalLB }}"
+joinTTL: "0"

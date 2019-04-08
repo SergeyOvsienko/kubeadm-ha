@@ -1,0 +1,41 @@
+---
+- name: common
+  hosts: all
+  tags:
+    - common
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: false
+  pre_tasks:
+  - name: Install python2 for Ansible
+    raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+    register: output
+    changed_when: output.stdout != ""
+  - name: Gathering Facts
+    setup:
+  roles:
+    - role: common
+
+- name: kubeadm init master
+  hosts: k8s_init_master
+  tags:
+    - init
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  roles:
+    - role: kubeadm-init-master
+
+- name: kubeadm init master
+  hosts: k8s_masters
+  serial: 1
+  tags:
+    - add
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  roles:
+    - role: add-masters
