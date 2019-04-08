@@ -1,1 +1,2 @@
 inventory/hosts.cfg-example
+*.retry
