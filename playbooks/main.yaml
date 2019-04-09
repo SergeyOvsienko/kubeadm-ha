@@ -28,14 +28,25 @@
   roles:
     - role: kubeadm-init-master
 
-- name: kubeadm init master
+- name: kubeadm add masters
   hosts: k8s_masters
   serial: 1
   tags:
-    - add
+    - masters
   remote_user: ubuntu
   become: yes
   become_method: sudo
   gather_facts: true
   roles:
     - role: add-masters
+
+- name: kubeadm add workers
+  hosts: k8s_workers
+  tags:
+    - workers
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  roles:
+    - role: add-workers

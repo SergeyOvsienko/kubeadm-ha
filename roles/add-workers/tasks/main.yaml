@@ -1,0 +1,16 @@
+- name: Copy kubeadm join config
+  template:
+    src: kubeadm-config.yaml.j2
+    dest: /opt/kubeadm-config.yaml
+    owner: root
+    group: root
+
+- name: Add controlplane node
+  shell: |
+    kubeadm join --config kubeadm-config.yaml --node-name $(curl -s http://169.254.169.254/latest/meta-data/hostname)
+    if [ "$?" = "0" ]; then 
+        touch kubeadm.lock
+    fi
+  args:
+    chdir: /opt
+    creates: kubeadm.lock

@@ -1,0 +1,1 @@
+workerNodeLables: "subnet=public,node-role.kubernetes.io/worker="
